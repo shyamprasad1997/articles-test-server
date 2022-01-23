@@ -28,13 +28,9 @@ func (r *AuthenticationRepository) CheckIfValidUser(authorID int, authorEmail st
 		return err
 	}
 	query := `SELECT email, user_id from user_app where email=$1 AND user_id=$2`
-	err = tx.QueryRow(query, authorEmail, authorID).Scan()
-	if err != sql.ErrNoRows {
-		tx.Commit()
-		return err
-	}
+	err = tx.QueryRow(query, authorEmail, authorID).Scan(&authorEmail, &authorID)
 	tx.Commit()
-	return nil
+	return err
 }
 
 func NewAuthenticationRepository(master, read *sql.DB) IAuthenticationRepository {

@@ -27,13 +27,13 @@ func (service *AuthenticationService) CheckIfTokenValid(reqToken string) error {
 	})
 
 	if err != nil || !token.Valid || token == nil {
-		return errors.New("Invalid token")
+		return errors.New("invalid token")
 	} else {
 		authorID := int(claims["id"].(float64))
 		authorEmail := claims["email"].(string)
 		err := service.CheckIfValidUser(authorID, authorEmail)
 		if err != nil {
-			return errors.New("Unauthorized user")
+			return errors.New("unauthorized user")
 		}
 	}
 	return nil

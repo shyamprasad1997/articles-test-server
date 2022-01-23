@@ -45,8 +45,10 @@ func (r *Router) SetupHandler() {
 	mw := middlewares.NewMiddleware(r.ReadDB, r.MasterDB, bh, bu, br)
 	r.Mux.Route("/v1", func(cr chi.Router) {
 		cr.Get("/articles/{page}", ah.GetArticlesHandler)
+		cr.Get("/articles/search/{page}", ah.GetSearchArticlesHandler)
 		cr.Group(func(subCr chi.Router) {
 			subCr.Use(mw.TokenValidation)
+			subCr.Post("/article", ah.PostArticle)
 		})
 	})
 }
