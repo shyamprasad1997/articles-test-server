@@ -6,6 +6,7 @@ import (
 
 	config "articles-test-server/configs"
 	"articles-test-server/shared/api/repository"
+	"articles-test-server/shared/utils"
 
 	"github.com/dgrijalva/jwt-go"
 )
@@ -16,6 +17,7 @@ type AuthenticationService struct {
 
 type IAuthenticationService interface {
 	CheckIfTokenValid(reqToken string) error
+	CheckIfTokenAdmin(reqToken string) error
 }
 
 // CheckIfTokenValid- checks whether the token is a valid
@@ -37,6 +39,16 @@ func (service *AuthenticationService) CheckIfTokenValid(reqToken string) error {
 		}
 	}
 	return nil
+}
+
+// CheckIfTokenAdmin- checks whether the token is an admin
+func (service *AuthenticationService) CheckIfTokenAdmin(reqToken string) error {
+	userId, err := utils.GetUserId(reqToken)
+	if err != nil || userId <= 0 {
+		return err
+	}
+	err = service.CheckIfUserIsAdmin(userId)
+	return err
 }
 
 func NewAuthenticationService(br *repository.BaseRepository, master, read *sql.DB) IAuthenticationService {

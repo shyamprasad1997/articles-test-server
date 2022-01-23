@@ -30,6 +30,20 @@ func (m *AuthenticationMiddleware) TokenValidation(next http.Handler) http.Handl
 	})
 }
 
+// CheckIfAdmin - check if user is admin
+func (m *AuthenticationMiddleware) CheckIfAdmin(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		reqToken := r.Header.Get("Authorization")
+		err := m.CheckIfTokenAdmin(reqToken)
+		if err != nil {
+			logrus.Warn(err)
+			m.StatusUnauthorized(w, "unauthorized endpoint")
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
 func NewMiddleware(read, master *sql.DB, bh *handler.BaseHTTPHandler, bu *usecase.BaseUsecase, br *repository.BaseRepository) *AuthenticationMiddleware {
 	os := NewAuthenticationService(br, master, read)
 	return &AuthenticationMiddleware{*bh, os}

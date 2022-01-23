@@ -21,7 +21,7 @@ func main() {
 	if err != nil {
 		fmt.Println(err, "Failed to initialize DB")
 	} else {
-		logger.Log.Info("Listen to the API request")
+		logger.Log.Info("Listen to the API request on port:", config.Load().Server.Port)
 	}
 	defer func() {
 		rErr := readDB.Close()

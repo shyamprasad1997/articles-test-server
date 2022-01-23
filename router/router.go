@@ -49,6 +49,11 @@ func (r *Router) SetupHandler() {
 		cr.Group(func(subCr chi.Router) {
 			subCr.Use(mw.TokenValidation)
 			subCr.Post("/article", ah.PostArticle)
+			subCr.Group(func(subCr chi.Router) {
+				subCr.Use(mw.CheckIfAdmin)
+				subCr.Put("/article/approve/{article_id}", ah.ApproveArticle)
+				subCr.Put("/article/decline/{article_id}", ah.DeclineArticle)
+			})
 		})
 	})
 }

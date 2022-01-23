@@ -108,3 +108,45 @@ func (h *HTTPHandler) PostArticle(w http.ResponseWriter, r *http.Request) {
 	h.Logger.Info("successfully created")
 	h.ResponseJSON(w, response)
 }
+
+func (h *HTTPHandler) ApproveArticle(w http.ResponseWriter, r *http.Request) {
+	var response PostArticlesResponse
+	articleIdParam := chi.URLParam(r, "article_id")
+	articleID, err := strconv.Atoi(articleIdParam)
+	if err != nil || articleID < 1 {
+		h.Logger.Warn(err, "bad request")
+		response.Status = false
+		h.StatusBadRequest(w, response)
+		return
+	}
+	err = h.usecase.ApproveArticle(articleID)
+	if err != nil {
+		h.Logger.Warn(err, "failed to approve")
+		h.StatusServerError(w, response)
+		return
+	}
+	response.Status = true
+	h.Logger.Info("successfully approved")
+	h.ResponseJSON(w, response)
+}
+
+func (h *HTTPHandler) DeclineArticle(w http.ResponseWriter, r *http.Request) {
+	var response PostArticlesResponse
+	articleIdParam := chi.URLParam(r, "article_id")
+	articleID, err := strconv.Atoi(articleIdParam)
+	if err != nil || articleID < 1 {
+		h.Logger.Warn(err, "bad request")
+		response.Status = false
+		h.StatusBadRequest(w, response)
+		return
+	}
+	err = h.usecase.DeclineArticle(articleID)
+	if err != nil {
+		h.Logger.Warn(err, "failed to approve")
+		h.StatusServerError(w, response)
+		return
+	}
+	response.Status = true
+	h.Logger.Info("successfully declined")
+	h.ResponseJSON(w, response)
+}
